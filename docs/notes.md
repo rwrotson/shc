@@ -1,0 +1,64 @@
+# Notes
+
+## Build Backend
+
+`uv_build` loads the `shc` package from `src/`:
+
+```toml
+[tool.uv.build-backend]
+module-name = "shc"
+module-root = "src"
+```
+
+## Package Metadata at Runtime
+
+`shc.utils.meta` reads the installed distribution's name, version, and dependencies. Editable `uv_build` installs omit `top_level.txt`, so `Meta.load_from_installed_package()` resolves the distribution through `direct_url.json` before using `packages_distributions()`.
+
+## structlog Integration
+
+`shc.utils.log` connects [structlog](https://www.structlog.org/) to stdlib logging through `ProcessorFormatter`:
+
+- `get_logger()` creates first-party loggers; third-party stdlib loggers use the same handlers.
+- Console logs use Rich-style output or JSON when `SHC_LOG__FORMAT=json`.
+- File logs use JSON in the user log directory; `SHC_LOG__DIR` overrides the directory.
+- Timestamps are ISO 8601 in UTC.
+- `structlog.contextvars.bind_contextvars()` adds fields to subsequent logs in the current context.
+
+`main()` calls `setup_logging()`. Before setup, structlog writes to stderr to keep JSON command output on stdout valid.
+
+## Output Format Pattern
+
+Commands read the `AppContext` stored by the root callback and call `render_output()`:
+
+```python
+app_context = get_app_context(ctx)
+render_output(
+    {"key": value},
+    app_context.output_format,
+    text_render=lambda: app_context.console.print(...),
+)
+```
+
+JSON output goes to stdout; diagnostics go to stderr. In text mode, `render_output()` uses `text_render` when provided and the Rich console otherwise.
+
+## Stdin Piping Pattern
+
+`read_stdin_if_piped()` returns `None` for a TTY and the piped content without trailing line breaks, so `echo hi | shc ...` matches `shc ... hi`. `read_stdin()` returns stdin unchanged:
+
+```python
+result = run_example(argument if argument is not None else read_stdin_if_piped(), option)
+```
+
+`CliRunner` provides non-TTY stdin in tests, even when no input is passed. `run_example()` rejects the resulting empty string with `InvalidInputError`.
+
+## Commitizen & Versioning
+
+[Commitizen](https://commitizen-tools.github.io/commitizen/) reads Conventional Commit messages to select the next version and update `CHANGELOG.md`. Its settings are in `pyproject.toml`:
+
+```toml
+version_provider = "uv"
+update_changelog_on_bump = true
+major_version_zero = true
+```
+
+The `commit-msg` hook checks Conventional Commit format.
