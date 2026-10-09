@@ -37,6 +37,7 @@ The root app uses `ServiceErrorGroup` (`cli/errors.py`). It catches `ServiceErro
 | `ShortcutExistsError` | 1 |
 | `MissingRequirementError` | 127, the same as the shell's "command not found" |
 | `PluginError` | 2 |
+| `ShortcutStorageError` | 1 |
 
 Add a subclass with its own `exit_code` for each new kind of expected failure. Unexpected exceptions are not caught and keep their traceback.
 

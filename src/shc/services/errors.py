@@ -39,3 +39,7 @@ class PluginError(ServiceError):
     """A plugin cannot be loaded or a referenced plugin is not registered."""
 
     exit_code = 2
+
+
+class ShortcutStorageError(ServiceError):
+    """The shortcuts file cannot be read or written."""

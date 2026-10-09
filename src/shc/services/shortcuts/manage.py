@@ -18,12 +18,12 @@ from shc.services.shortcuts.parsing import (
     parse_shortcuts,
 )
 from shc.services.shortcuts.render import template_placeholders
-from shc.services.shortcuts.store import ShortcutStore
+from shc.services.shortcuts.store import ShortcutStore, read_document, write_document
 
 
 def load_shortcuts(store: ShortcutStore, *, reserved: Collection[str] = ()) -> ParsedShortcuts:
     """Load and validate all shortcuts from the store."""
-    return parse_shortcuts(store.load(), reserved=reserved)
+    return parse_shortcuts(read_document(store), reserved=reserved)
 
 
 def list_shortcuts(store: ShortcutStore, *, reserved: Collection[str] = ()) -> list[ShortcutSpec]:
@@ -34,7 +34,7 @@ def list_shortcuts(store: ShortcutStore, *, reserved: Collection[str] = ()) -> l
 
 def show_shortcut(store: ShortcutStore, name: str) -> dict[str, object]:
     """Return the stored entry of one shortcut as plain data."""
-    entries = _entries(store.load())
+    entries = _entries(read_document(store))
     if name not in entries:
         raise ShortcutNotFoundError(f"shortcut {name!r} is not defined")
     return cast(dict[str, object], to_plain(entries[name]))
@@ -70,7 +70,7 @@ def add_shortcut(
     reserved: Collection[str] = (),
 ) -> ShortcutSpec:
     """Add a shortcut to the store, replacing an existing one only with `force`."""
-    data = store.load()
+    data = read_document(store)
     entries = _entries(data)
     if new.name in entries and not force:
         raise ShortcutExistsError(
@@ -80,19 +80,19 @@ def add_shortcut(
     spec = parse_shortcut(new.name, entry, reserved=reserved)
     entries[new.name] = entry
     data[SHORTCUTS_KEY] = entries
-    store.save(data)
+    write_document(store, data)
     return spec
 
 
 def remove_shortcut(store: ShortcutStore, name: str) -> None:
     """Delete a shortcut and save the store."""
-    data = store.load()
+    data = read_document(store)
     entries = _entries(data)
     if name not in entries:
         raise ShortcutNotFoundError(f"shortcut {name!r} is not defined")
     del entries[name]
     data[SHORTCUTS_KEY] = entries
-    store.save(data)
+    write_document(store, data)
 
 
 def validate_shortcuts(

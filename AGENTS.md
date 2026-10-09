@@ -144,7 +144,7 @@ To add a new command group: put the use case in `src/shc/services/`, create a fi
 
 ### Configuration via Environment Variables
 
-`src/shc/config/settings.py` defines `Settings` (Pydantic `BaseSettings`, prefix `SHC_`, nested delimiter `__`) with defaults in code and the sections `ConsoleSettings` (`SHC_CONSOLE__*`) and `LogSettings` (`SHC_LOG__*`). `load_settings()` reads the environment and `.env`; empty values use defaults. `setup_logging()` and `build_console()` take a section instead of reading the environment themselves.
+`src/shc/config/settings.py` defines `Settings` (Pydantic `BaseSettings`, prefix `SHC_`, nested delimiter `__`) with defaults in code and the sections `ConsoleSettings` (`SHC_CONSOLE__*`), `LogSettings` (`SHC_LOG__*`), and `ShortcutsSettings` (`SHC_SHORTCUTS__*`). `load_settings()` reads the environment and `.env`; empty values use defaults. `setup_logging()` and `build_console()` take a section instead of reading the environment themselves.
 
 Every setting needs a `Field(description=...)` and a line in `.env.example`; tests in `tests/config/` enforce both. The docs configuration page is generated from `Settings` by `docs/gen_config_page.py`; do not edit it by hand.
 
@@ -175,6 +175,7 @@ Before `setup_logging()` is called (e.g. in tests), structlog defaults to stderr
 | `src/shc/utils/emoji.py` | `Emoji` StrEnum for consistent emoji usage |
 | `src/shc/utils/progress.py` | Rich `Progress` bar wired to the project console |
 | `src/shc/utils/misc.py` | `find_project_root()` helper |
+| `src/shc/utils/shortcut_store.py` | `YamlShortcutStore`: round-trip YAML storage of the shortcuts file |
 
 ### Testing
 

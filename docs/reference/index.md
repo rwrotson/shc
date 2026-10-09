@@ -33,3 +33,4 @@ The pages below are generated from public objects in `src/shc/`.
 | `shc.utils.emoji` | Define console emoji |
 | `shc.utils.progress` | Create Rich progress bars |
 | `shc.utils.misc` | Locate the project root |
+| `shc.utils.shortcut_store` | Read and write the shortcuts YAML file |

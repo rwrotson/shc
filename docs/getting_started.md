@@ -169,6 +169,7 @@ Behaviour can be overridden via environment variables or a `.env` file. Sections
 |--------|----------|
 | `SHC_CONSOLE__*` | Rich console (width, colors, markup, quiet mode) |
 | `SHC_LOG__*` | Log levels, console renderer, log directory, file rotation |
+| `SHC_SHORTCUTS__*` | Shortcuts YAML file and plugin directory |
 
 ```env
 SHC_LOG__LEVEL=DEBUG

@@ -65,3 +65,26 @@ def test_env_example_documents_every_setting() -> None:
 
 def test_every_setting_has_a_description() -> None:
     assert [name for name, field in env_fields() if not field.description] == []
+
+
+def test_shortcut_paths_default_to_user_config_dir(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("shc.config.settings.user_config_path", lambda app: Path("/config") / app)
+
+    shortcuts = load_settings().shortcuts
+
+    assert shortcuts.file is None
+    assert shortcuts.resolved_file == Path("/config/shc/shortcuts.yml")
+    assert shortcuts.resolved_plugins_dir == Path("/config/shc/plugins")
+
+
+def test_shortcut_paths_from_environment_expand_home(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("SHC_SHORTCUTS__FILE", "~/s.yml")
+    monkeypatch.setenv("SHC_SHORTCUTS__PLUGINS_DIR", "~/plugins")
+
+    shortcuts = load_settings().shortcuts
+
+    assert shortcuts.resolved_file == tmp_path / "s.yml"
+    assert shortcuts.resolved_plugins_dir == tmp_path / "plugins"

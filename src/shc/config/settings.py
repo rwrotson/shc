@@ -2,7 +2,7 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import Literal
 
-from platformdirs import user_log_path
+from platformdirs import user_config_path, user_log_path
 from pydantic import BaseModel, Field
 from pydantic.fields import FieldInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -58,6 +58,35 @@ class LogSettings(BaseModel):
         return self.dir if self.dir is not None else user_log_path("shc")
 
 
+class ShortcutsSettings(BaseModel):
+    """Shortcuts configuration file and plugin directory."""
+
+    file: Path | None = Field(
+        default=None,
+        description="Shortcuts YAML file; `shortcuts.yml` in the platform user config directory "
+        "if unset",
+    )
+    plugins_dir: Path | None = Field(
+        default=None,
+        description="Directory of plugin `*.py` files; `plugins` in the platform user config "
+        "directory if unset",
+    )
+
+    @property
+    def resolved_file(self) -> Path:
+        """Select the explicit shortcuts file or the platform default."""
+        if self.file is not None:
+            return self.file.expanduser()
+        return user_config_path("shc") / "shortcuts.yml"
+
+    @property
+    def resolved_plugins_dir(self) -> Path:
+        """Select the explicit plugin directory or the platform default."""
+        if self.plugins_dir is not None:
+            return self.plugins_dir.expanduser()
+        return user_config_path("shc") / "plugins"
+
+
 class Settings(BaseSettings):
     """Load application settings from SHC_* variables and .env."""
 
@@ -71,6 +100,7 @@ class Settings(BaseSettings):
 
     console: ConsoleSettings = Field(default_factory=ConsoleSettings)
     log: LogSettings = Field(default_factory=LogSettings)
+    shortcuts: ShortcutsSettings = Field(default_factory=ShortcutsSettings)
 
 
 def nested_model(field: FieldInfo) -> type[BaseModel] | None:
