@@ -13,6 +13,16 @@ The pages below are generated from public objects in `src/shc/`.
 | `shc.cli.errors` | Report service errors and set exit codes |
 | `shc.services.errors` | Define expected use-case failures |
 | `shc.services.example` | Validate the example command input |
+| `shc.services.shortcuts.models` | Declare shortcuts and their parameters |
+| `shc.services.shortcuts.parsing` | Validate the shortcuts configuration |
+| `shc.services.shortcuts.render` | Substitute values into command templates |
+| `shc.services.shortcuts.run` | Check requirements and run shortcut commands |
+| `shc.services.shortcuts.store` | Define the shortcuts storage interface |
+| `shc.services.shortcuts.manage` | List, show, add, remove, and validate shortcuts |
+| `shc.services.plugins.markers` | Mark plugin functions with decorators |
+| `shc.services.plugins.registry` | Load plugins and resolve them by name |
+| `shc.services.plugins.builtin_plugins` | Provide built-in default factories and completions |
+| `shc.plugin` | Public decorators for plugin files |
 | `shc.config.settings` | Define and load application settings |
 | `shc.utils.console` | Configure and share the Rich console |
 | `shc.utils.log` | Configure console and file logging |
