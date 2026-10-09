@@ -11,11 +11,15 @@ from shc.utils.console import get_console
 
 @pytest.fixture(autouse=True)
 def isolated_environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    """Keep the developer's SHC_* variables and .env file out of every test."""
+    """Keep the developer's SHC_* variables, .env file, and shortcuts out of every test."""
     for name in list(os.environ):
         if name.startswith("SHC_"):
             monkeypatch.delenv(name)
     monkeypatch.chdir(tmp_path)
+    # Keep the developer's real shortcuts file and plugins out of every test.
+    monkeypatch.setattr(
+        "shc.config.settings.user_config_path", lambda app: tmp_path / "user-config" / app
+    )
 
 
 @pytest.fixture(autouse=True)

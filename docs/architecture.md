@@ -47,4 +47,4 @@ Add a subclass with its own `exit_code` for each new kind of expected failure. U
 - Add a command in `cli/commands/`: read `AppContext`, call the use case, render the result. Register the group in `cli/app.py`.
 - Test the use case directly in `tests/services/` and the argument parsing, output, and exit codes with `CliRunner` in `tests/cli/`.
 
-`services/example.py` and `cli/commands/command.py` show this split.
+`services/shortcuts/manage.py` and `cli/commands/config.py` show this split.

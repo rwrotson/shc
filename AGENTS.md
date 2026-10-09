@@ -133,6 +133,7 @@ src/shc/cli/context.py      — AppContext (settings, console, output format) an
 src/shc/cli/errors.py       — ServiceErrorGroup: reports ServiceError on stderr and exits with its code
 src/shc/cli/callbacks/      — Eager option callbacks that print metadata and exit
 src/shc/cli/commands/       — Subcommand groups; each file creates its own Typer sub-app
+src/shc/cli/shortcuts/      — ShortcutGroup: builds one Typer command per configured shortcut
 src/shc/services/           — Use cases, result types, and ServiceError subclasses
 ```
 

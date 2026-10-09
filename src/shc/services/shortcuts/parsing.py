@@ -109,6 +109,7 @@ def parse_shortcut(name: str, entry: object, *, reserved: Collection[str] = ()) 
         options=_parse_params(entry.get("options", []), "option", where),
     )
     _check_param_names(spec)
+    _check_argument_order(spec)
     return spec
 
 
@@ -158,8 +159,7 @@ def _parse_param(raw: object, kind: ParamKind, where: str) -> ParamSpec:
 def _check_param(param: ParamSpec, where: str) -> None:
     if param.default is not MISSING and param.default_factory is not None:
         raise ShortcutConfigError(f"{where}: 'default' and 'default_factory' are exclusive")
-    if param.choices is not None and not param.choices:
-        raise ShortcutConfigError(f"{where}: 'choices' must not be empty")
+    _check_choices(param, where)
     if param.flag is not None:
         if param.kind == "argument":
             raise ShortcutConfigError(f"{where}: 'flag' is only valid for options")
@@ -168,6 +168,30 @@ def _check_param(param: ParamSpec, where: str) -> None:
     path_type = param.typer_options.get("path_type")
     if path_type is not None and path_type not in PATH_TYPES:
         raise ShortcutConfigError(f"{where}: 'path_type' must be one of {sorted(PATH_TYPES)}")
+
+
+def _check_choices(param: ParamSpec, where: str) -> None:
+    if param.choices is None:
+        return
+    if not param.choices:
+        raise ShortcutConfigError(f"{where}: 'choices' must not be empty")
+    if param.default is MISSING or param.default is None:
+        return
+    defaults = param.default if isinstance(param.default, tuple) else (param.default,)
+    if not all(value in param.choices for value in defaults):
+        raise ShortcutConfigError(f"{where}: 'default' must be one of the choices")
+
+
+def _check_argument_order(spec: ShortcutSpec) -> None:
+    optional = None
+    for argument in spec.arguments:
+        if argument.has_default:
+            optional = argument
+        elif optional is not None:
+            raise ShortcutConfigError(
+                f"shortcut {spec.name!r}: required argument {argument.name!r} "
+                f"cannot follow optional argument {optional.name!r}"
+            )
 
 
 def _check_param_names(spec: ShortcutSpec) -> None:

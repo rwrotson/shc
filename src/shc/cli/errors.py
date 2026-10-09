@@ -17,9 +17,17 @@ class ServiceErrorGroup(TyperGroup):
         try:
             return super().invoke(ctx)
         except ServiceError as error:
-            app_context = ctx.find_object(AppContext)
-            if app_context is not None and app_context.output_format == OutputFormat.json:
+            if _output_format(ctx) == OutputFormat.json:
                 error_json(type(error).__name__, str(error))
             else:
                 typer.echo(f"Error: {error}", err=True)
             raise typer.Exit(error.exit_code) from error
+
+
+def _output_format(ctx: Any) -> object:  # noqa: ANN401  # Typer's vendored Click context.
+    app_context = ctx.find_object(AppContext)
+    if app_context is not None:
+        return app_context.output_format
+    # Errors raised while resolving a subcommand happen before the root callback runs.
+    params: dict[str, object] = ctx.find_root().params
+    return params.get("output_format")

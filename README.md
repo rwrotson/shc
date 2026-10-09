@@ -79,13 +79,14 @@ The root app exposes flags available to every subcommand:
 | `--output-format` | `-f` | `text` | `text` (Rich) or `json` (machine-readable) |
 | `--version` | `-v` | — | Print version and dependency list, then exit |
 | `--authors` | `-A` | — | Print author contacts, then exit |
+| `--dry-run` | `-n` | off | Print a shortcut's command instead of running it |
 
 JSON output is written to stdout; diagnostics are written to stderr.
 
 ```bash
-shc --verbose command example-command hello
-shc --output-format json command example-command hello
-echo "hello" | shc command example-command
+shc --verbose config list
+shc --output-format json config list
+shc --dry-run <shortcut> [ARGS]...
 ```
 
 ## Shell Completion
@@ -139,16 +140,24 @@ See `.env.example` and the generated configuration page in the documentation sit
 src/
 └── shc/
     ├── main.py              # entry point
+    ├── plugin.py            # public decorators for plugin files
     ├── cli/
-    │   ├── app.py           # root Typer app (--verbose, --output-format, --version, --authors)
+    │   ├── app.py           # root Typer app (global options, config and completion groups)
     │   ├── context.py       # AppContext stored in ctx.obj
     │   ├── errors.py        # ServiceError → stderr message and exit code
     │   ├── callbacks/       # eager option callbacks (--version, --authors)
-    │   └── commands/
-    │       ├── command.py   # example command group (stdin + output-format patterns)
-    │       └── completion.py # shell completion sub-app
-    ├── config/              # Settings with console and log sections
+    │   ├── commands/
+    │   │   ├── config.py    # shc config list|show|add|remove|edit|validate|path
+    │   │   └── completion.py # shell completion sub-app
+    │   └── shortcuts/
+    │       ├── group.py     # root group that adds one command per shortcut
+    │       ├── builder.py   # shortcut declaration → Typer command
+    │       ├── types.py     # whitelisted type strings → Typer types
+    │       └── loading.py   # store, plugin registry, reserved names
+    ├── config/              # Settings with console, log, and shortcuts sections
     ├── services/            # use cases and ServiceError; no Typer, Rich, or settings
+    │   ├── shortcuts/       # parse, render, run, and manage shortcuts
+    │   └── plugins/         # plugin decorators, registry, built-in plugins
     └── utils/
         ├── console.py       # singleton Rich Console
         ├── log.py           # structlog setup (ConsoleRenderer dev / JSON prod)
@@ -158,7 +167,8 @@ src/
         ├── format.py        # Rich Theme
         ├── emoji.py         # Emoji StrEnum
         ├── progress.py      # Rich Progress bar factory
-        └── misc.py          # find_project_root()
+        ├── misc.py          # find_project_root()
+        └── shortcut_store.py # round-trip YAML storage of the shortcuts file
 ```
 
 ## CI/CD

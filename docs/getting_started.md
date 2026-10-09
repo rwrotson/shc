@@ -35,11 +35,11 @@ uv run shc --authors
 Place global flags before the subcommand:
 
 ```bash
-uv run shc --verbose command example-command hello
+uv run shc --verbose config list
 
-uv run shc --output-format json command example-command hello
+uv run shc --output-format json config list
 
-echo "hello" | uv run shc command example-command
+uv run shc --dry-run <shortcut> [ARGS]...
 ```
 
 ### Shell completion

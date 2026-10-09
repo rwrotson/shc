@@ -9,11 +9,12 @@ from shc.utils.output import OutputFormat
 
 @dataclass(frozen=True, slots=True)
 class AppContext:
-    """Hold the settings, console, and output format of one CLI invocation."""
+    """Hold the settings, console, output format, and dry-run flag of one CLI invocation."""
 
     settings: Settings
     console: Console
     output_format: OutputFormat
+    dry_run: bool = False
 
 
 def get_app_context(ctx: typer.Context) -> AppContext:

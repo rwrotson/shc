@@ -46,10 +46,10 @@ JSON output goes to stdout; diagnostics go to stderr. In text mode, `render_outp
 `read_stdin_if_piped()` returns `None` for a TTY and the piped content without trailing line breaks, so `echo hi | shc ...` matches `shc ... hi`. `read_stdin()` returns stdin unchanged:
 
 ```python
-result = run_example(argument if argument is not None else read_stdin_if_piped(), option)
+value = argument if argument is not None else read_stdin_if_piped()
 ```
 
-`CliRunner` provides non-TTY stdin in tests, even when no input is passed. `run_example()` rejects the resulting empty string with `InvalidInputError`.
+`CliRunner` provides non-TTY stdin in tests, even when no input is passed, so a command must treat the resulting empty string as missing input.
 
 ## Commitizen & Versioning
 

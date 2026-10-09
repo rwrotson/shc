@@ -174,3 +174,36 @@ def test_duplicate_parameter_names_are_rejected() -> None:
 
     with pytest.raises(ShortcutConfigError, match="declared twice"):
         parse_shortcut("a", entry)
+
+
+def test_required_argument_cannot_follow_optional_one() -> None:
+    entry = {
+        "command": "x {a} {b}",
+        "arguments": [{"name": "a", "default_factory": "cwd"}, {"name": "b"}],
+    }
+
+    with pytest.raises(ShortcutConfigError, match="'b' cannot follow optional argument 'a'"):
+        parse_shortcut("s", entry)
+
+
+def test_optional_arguments_may_follow_required_ones() -> None:
+    entry = {"command": "x {a} {b}", "arguments": [{"name": "a"}, {"name": "b", "default": 1}]}
+
+    assert [param.name for param in parse_shortcut("s", entry).arguments] == ["a", "b"]
+
+
+@pytest.mark.parametrize("default", ["soft", ["soft", "hard"], None])
+def test_choice_defaults_must_be_choices(default: object) -> None:
+    option = {"name": "mode", "choices": ["soft", "hard"], "default": default}
+
+    spec = parse_shortcut("s", {"command": "x {mode}", "options": [option]})
+
+    assert spec.options[0].choices == ("soft", "hard")
+
+
+@pytest.mark.parametrize("default", ["medium", ["soft", "medium"], {"a": 1}])
+def test_choice_defaults_outside_choices_are_rejected(default: object) -> None:
+    option = {"name": "mode", "choices": ["soft", "hard"], "default": default}
+
+    with pytest.raises(ShortcutConfigError, match="'default' must be one of the choices"):
+        parse_shortcut("s", {"command": "x {mode}", "options": [option]})

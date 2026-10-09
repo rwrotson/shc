@@ -1,3 +1,4 @@
+import io
 import os
 import tempfile
 from collections.abc import Mapping
@@ -53,6 +54,13 @@ class YamlShortcutStore:
         except BaseException:
             Path(temp_name).unlink(missing_ok=True)
             raise
+
+
+def dump_yaml(data: object) -> str:
+    """Serialize data as block-style YAML."""
+    stream = io.StringIO()
+    _yaml().dump(data, stream)
+    return stream.getvalue()
 
 
 def _yaml() -> YAML:
