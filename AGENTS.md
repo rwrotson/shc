@@ -28,7 +28,7 @@ uv run poe lint-imports # import-linter layer contracts
 uv run poe typecheck    # mypy (strict: src, tests, docs)
 uv run poe test         # pytest (parallel, 95% branch coverage enforced)
 uv run poe test-fast    # pytest without coverage, parallel, random order
-uv run poe docs         # mkdocs serve
+uv run poe docs         # properdocs serve
 uv run poe audit        # pip-audit over locked dependencies
 
 # Or run tools directly
@@ -52,7 +52,7 @@ uv run cz changelog      # update CHANGELOG only
 uv run poe docs
 
 # Build static docs site as CI does (CI deploys it to GitHub Pages via actions/deploy-pages)
-uv run --group docs mkdocs build --strict
+uv run --group docs properdocs build --strict
 ```
 
 ## Dependencies
@@ -67,11 +67,11 @@ uv run --group docs mkdocs build --strict
 ## Change Workflow
 
 - Inspect `git status` before editing. Preserve existing uncommitted changes and limit edits to the requested task.
-- Run `uv run poe check` after code changes. After documentation, `mkdocs.yml`, or public docstring changes, also run `uv run --group docs mkdocs build --strict`.
+- Run `uv run poe check` after code changes. After documentation, `properdocs.yml`, or public docstring changes, also run `uv run --group docs properdocs build --strict`.
 - Do not lower coverage thresholds, disable checks, relax import-linter contracts, or add lint and type suppressions solely to pass CI. Explain necessary suppressions at the affected line.
 - Use non-rewriting checks (`poe fmt-check`, `poe lint`) for verification; run formatters or `--fix` only when intentionally editing files. Pre-commit's Ruff hooks rewrite files.
 - Report which checks ran, which were skipped, and why. `poe test-fast` is not the full CI suite: it skips coverage, and CI also runs the lowest-dependency job, package and docs builds, and security scans.
-- When changing public settings, global options, or commands, update `.env.example`, README, and MkDocs. Do not edit generated pages (configuration, API reference); edit `Settings` field descriptions and source docstrings instead.
+- When changing public settings, global options, or commands, update `.env.example`, README, and the docs. Do not edit generated pages (configuration, API reference); edit `Settings` field descriptions and source docstrings instead.
 - Keep the user's `.env` and secrets untracked.
 
 ## CI/CD
@@ -84,13 +84,13 @@ Parallel jobs:
 - **`test`** — `poe test` (95% branch coverage).
 - **`lowest`** — installs the lowest allowed direct dependencies (`--resolution lowest-direct`)
   and runs pytest; it checks the declared lower bounds, which the lock does not.
-- **`build`** — `uv build`, `mkdocs build --strict`, `poe audit`, trivy filesystem scan
+- **`build`** — `uv build`, `properdocs build --strict`, `poe audit`, trivy filesystem scan
   (CRITICAL/HIGH).
 
 `.github/workflows/release.yml` triggers on version tags (`v*`) and manual `workflow_dispatch`.
 It runs CI first, then:
 
-- **`docs`** — builds the site with `mkdocs build --strict` and deploys it to **GitHub Pages** via
+- **`docs`** — builds the site with `properdocs build --strict` and deploys it to **GitHub Pages** via
   `actions/upload-pages-artifact` + `actions/deploy-pages` (the `github-pages` environment).
   Permissions: `pages: write`, `id-token: write`, `contents: read`. There is **no PyPI publish**.
 

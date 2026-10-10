@@ -46,7 +46,7 @@ See [Shortcuts](https://rwrotson.github.io/shc/shortcuts/) for the file format, 
 - One Pydantic `Settings` with nested `SHC_CONSOLE__*`, `SHC_LOG__*`, and `SHC_SHORTCUTS__*` sections, a test that keeps `.env.example` in sync, and a generated configuration page
 - structlog logging to stderr (console or JSON) and a rotating JSON log file with UTC timestamps
 - Strict MyPy with the Pydantic plugin, Ruff, pytest in parallel and random order with a 95% branch coverage gate, poethepoet tasks, pre-commit hooks, Commitizen
-- CI with a lowest-dependency test job, package and strict docs builds, pip-audit, and trivy; actions pinned to commit SHAs; MkDocs on GitHub Pages after CI passes on a release tag
+- CI with a lowest-dependency test job, package and strict docs builds, pip-audit, and trivy; actions pinned to commit SHAs; ProperDocs on GitHub Pages after CI passes on a release tag
 
 ## Stack
 
@@ -61,7 +61,7 @@ See [Shortcuts](https://rwrotson.github.io/shc/shortcuts/) for the file format, 
 - **[import-linter](https://import-linter.readthedocs.io/)** — layer boundary contracts
 - **[poethepoet](https://poethepoet.natn.io/)** — task runner
 - **[commitizen](https://commitizen-tools.github.io/commitizen/)** — Conventional Commits + automated versioning and CHANGELOG
-- **[MkDocs Material](https://squidfunk.github.io/mkdocs-material/)** — documentation site
+- **[ProperDocs](https://properdocs.org/)** + **[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)** — documentation site
 
 ## Requirements
 
@@ -100,11 +100,11 @@ uv run pytest tests/path/to/test.py
 ## Docs
 
 ```bash
-uv run --group docs mkdocs serve
-uv run --group docs mkdocs build
+uv run --group docs properdocs serve
+uv run --group docs properdocs build
 ```
 
-Source is in `docs/`. MkDocs generates the API reference from public docstrings. The release workflow deploys the site to GitHub Pages.
+Source is in `docs/`. ProperDocs generates the API reference from public docstrings. The release workflow deploys the site to GitHub Pages.
 
 ## Global CLI Flags
 
@@ -217,7 +217,7 @@ src/
 | `quality` | ruff format check, ruff lint, import-linter contracts, strict mypy |
 | `test` | parallel tests in random order, 95% branch coverage enforced |
 | `lowest` | tests against the lowest allowed direct dependencies |
-| `build` | package build, `mkdocs build --strict`, pip-audit, trivy filesystem scan (CRITICAL/HIGH) |
+| `build` | package build, `properdocs build --strict`, pip-audit, trivy filesystem scan (CRITICAL/HIGH) |
 
 Dependabot opens weekly grouped PRs for uv dependencies, GitHub Actions, and pre-commit hooks.
 
@@ -225,7 +225,7 @@ Dependabot opens weekly grouped PRs for uv dependencies, GitHub Actions, and pre
 
 | Job | What it does |
 |-----|-------------|
-| `docs` | builds MkDocs and deploys it to GitHub Pages via GitHub Actions |
+| `docs` | builds the docs with ProperDocs and deploys it to GitHub Pages via GitHub Actions |
 
 The workflow does not publish the package to PyPI. Set Pages Source to **GitHub Actions** and allow `v*` tags in the `github-pages` environment for tag-triggered deployments.
 
