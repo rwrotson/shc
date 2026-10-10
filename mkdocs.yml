@@ -11,6 +11,7 @@ watch:
 nav:
   - Home: index.md
   - Getting Started: getting_started.md
+  - Shortcuts: shortcuts.md
   - Architecture: architecture.md
   - Configuration: configuration.md
   - Notes: notes.md

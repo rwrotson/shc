@@ -76,4 +76,11 @@ def test_render_command_substitutes_and_strips() -> None:
 
     rendered = render_command(spec, {"value": "a b", "sort_by": None, "dry_run": True})
 
-    assert rendered == "ls --dry-run  'a b' a b {x}"
+    assert rendered == "ls --dry-run 'a b' a b {x}"
+
+
+def test_render_command_keeps_spaces_written_in_the_template() -> None:
+    spec = ShortcutSpec(name="s", command="echo 'a  b' {value}  end", arguments=(ARG,))
+
+    assert render_command(spec, {"value": None}) == "echo 'a  b'  end"
+    assert render_command(spec, {"value": "x"}) == "echo 'a  b' x  end"

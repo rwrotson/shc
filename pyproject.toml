@@ -115,8 +115,6 @@ warn_required_dynamic_aliases = true
 # RUFF -------------------------------------------------------------------------
 [tool.ruff]
 line-length = 100
-# Prototype kept for reference until the rewrite is complete.
-extend-exclude = ["legacy"]
 target-version = "py314"
 src = ["src", "tests"]
 

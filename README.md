@@ -1,12 +1,49 @@
 # shc
 
-CLI tool for saving shortcuts for other terminal commands. Built from typer-template: Typer, Rich output, structlog logging, and environment-based settings.
+CLI tool for saving shortcuts for other terminal commands. Each shortcut in a YAML file becomes a `shc` command with typed arguments, options, help, and shell completion.
+
+## Installation
+
+```bash
+uv tool install git+https://github.com/rwrotson/shc
+shc completion install
+```
+
+## Usage
+
+```bash
+shc config add gco 'git checkout {branch}' -d 'Check out a branch' -r git
+shc gco main                 # runs: git checkout main
+shc --dry-run gco "my fix"   # prints: git checkout 'my fix'
+shc config list
+shc config edit              # open the YAML file in $EDITOR, then validate it
+```
+
+Shortcuts can declare typed arguments and options, choices, defaults, and completions from Python plugins:
+
+```yaml
+shortcuts:
+  gco:
+    command: "git checkout {force} {branch}"
+    help: Check out a branch.
+    requirements: [git]
+    arguments:
+      - name: branch
+        autocompletion: git_branches
+    options:
+      - name: force
+        type: bool
+        flag: -f
+```
+
+See [Shortcuts](https://rwrotson.github.io/shc/shortcuts/) for the file format, rendering rules, types, and plugins.
 
 ## What Is Included
 
-- Typer app with global `--verbose`, `--output-format text|json`, `--version`, and `--authors` options; JSON on stdout and diagnostics on stderr; piped stdin support; shell completion commands
+- Shortcuts from a YAML file as typed Typer commands; `shc config list|show|add|remove|edit|validate|path`; plugins for completion, defaults, and value parsing
+- Typer app with global `--verbose`, `--output-format text|json`, `--dry-run`, `--version`, and `--authors` options; JSON on stdout and diagnostics on stderr; shell completion commands
 - A `services/` layer for use cases; `ServiceError` subclasses map to stderr messages and exit codes; import-linter contracts keep services independent of Typer, Rich, and settings
-- One Pydantic `Settings` with nested `SHC_CONSOLE__*` and `SHC_LOG__*` sections, a test that keeps `.env.example` in sync, and a generated configuration page
+- One Pydantic `Settings` with nested `SHC_CONSOLE__*`, `SHC_LOG__*`, and `SHC_SHORTCUTS__*` sections, a test that keeps `.env.example` in sync, and a generated configuration page
 - structlog logging to stderr (console or JSON) and a rotating JSON log file with UTC timestamps
 - Strict MyPy with the Pydantic plugin, Ruff, pytest in parallel and random order with a 95% branch coverage gate, poethepoet tasks, pre-commit hooks, Commitizen
 - CI with a lowest-dependency test job, package and strict docs builds, pip-audit, and trivy; actions pinned to commit SHAs; MkDocs on GitHub Pages after CI passes on a release tag
@@ -31,7 +68,7 @@ CLI tool for saving shortcuts for other terminal commands. Built from typer-temp
 - Python 3.14+
 - uv
 
-## Getting Started
+## Development Setup
 
 ```bash
 uv sync --all-groups --locked

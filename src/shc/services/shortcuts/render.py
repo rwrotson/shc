@@ -47,13 +47,20 @@ def template_placeholders(command: str) -> tuple[Placeholder, ...]:
 
 def render_command(spec: ShortcutSpec, values: Mapping[str, object]) -> str:
     """Substitute parameter values into the shortcut's command template."""
-    parts = []
+    text = ""
+    after_empty_value = False
     for literal, name, _, conversion in string.Formatter().parse(spec.command):
-        parts.append(literal)
+        # An empty value between two spaces would leave a double space; keep one.
+        skip = int(after_empty_value and text.endswith(" ") and literal.startswith(" "))
+        text += literal[skip:]
+        after_empty_value = False
         if name is not None:
-            param = spec.param(name)
-            parts.append(render_value(param, values[name], raw=conversion == RAW_CONVERSION))
-    return "".join(parts).strip()
+            rendered = render_value(
+                spec.param(name), values[name], raw=conversion == RAW_CONVERSION
+            )
+            text += rendered
+            after_empty_value = not rendered
+    return text.strip()
 
 
 def render_value(param: ParamSpec, value: object, *, raw: bool = False) -> str:

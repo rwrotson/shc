@@ -30,6 +30,15 @@ uv run shc --version
 uv run shc --authors
 ```
 
+### Shortcuts
+
+```bash
+uv run shc config add hi 'echo hello {who}'
+uv run shc hi "big world"
+```
+
+See [Shortcuts](shortcuts.md) for the file format and plugins.
+
 ### Global flags
 
 Place global flags before the subcommand:
