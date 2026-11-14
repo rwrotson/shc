@@ -23,12 +23,12 @@ classifiers = [
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "platformdirs>=4.12.4",
-    "pydantic-settings>=2.15.0",
+    "platformdirs>=4.14.5",
+    "pydantic-settings>=2.16.2",
     "rich>=15.0.0",
     "ruamel-yaml>=0.19.1",
     "structlog>=26.1.0",
-    "typer>=0.27.3",
+    "typer>=0.29.1",
 ]
 
 [dependency-groups]
